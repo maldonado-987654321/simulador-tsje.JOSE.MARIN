@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280, initial-scale=1.0">
+<title>Simulador TSJE</title>
+
+<style>
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  padding:0;
+  background:#2b2b2b;
+  font-family:Arial, Helvetica, sans-serif;
+  color:#111;
+  text-align:center;
+  overflow-x:auto;
+}
+
+body{min-width:1280px}
+
+.pantalla{
+  display:none;
+  width:1280px;
+  min-height:100vh;
+  margin:0 auto;
+  padding-top:520px;
+}
+
+.activa{display:block}
+
+.marco{
+  background:#d9d9d9;
+  border:1px solid #999;
+}
+
+.barra-superior{
+  height:44px;
+  background:#555;
+  color:#fff;
+  display:grid;
+  grid-template-columns:110px 1fr 110px;
+  align-items:center;
+  font-size:11px;
+}
+
+.logo{
+  height:38px;
+  object-fit:contain;
+  background:#fff;
+  margin-left:8px;
+}
+
+.titulo-barra{
+  background:#fff;
+  color:#111;
+  font-weight:bold;
+  padding:8px;
+  font-size:15px;
+}
+
+.logo-derecha{
+  height:34px;
+  object-fit:contain;
+  background:#fff;
+  margin-left:auto;
+  margin-right:8px;
+}
+
+.grid2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+}
+
+.grid-junta{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+}
+
+.card{
+  background:#fff;
+  border:2px solid #ddd;
+  cursor:pointer;
+  min-height:155px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+
+.card:hover,
+.card.seleccionado{
+  border:5px solid green;
+  background:#e4ffe4;
+}
+
+.card.bloqueado{
+  opacity:.35;
+  pointer-events:none;
+}
+
+.partido{
+  font-size:22px;
+  font-weight:900;
+  margin-bottom:18px;
+}
+
+.fila-candidato{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:80px;
+}
+
+.foto-int{
+  width:120px;
+  height:120px;
+  object-fit:contain;
+}
+
+.lista-box{
+  font-size:24px;
+  font-weight:900;
+}
+
+.lista-numero{
+  font-size:48px;
+  font-weight:900;
+  line-height:.9;
+}
+
+.sigla{
+  font-size:20px;
+  margin-top:6px;
+}
+
+.nombre{
+  font-size:19px;
+  margin-top:16px;
+}
+
+.blanco{
+  font-size:34px;
+  font-weight:900;
+}
+
+.card-lista{
+  min-height:210px;
+}
+
+.lista-grande{
+  font-size:48px;
+  font-weight:900;
+}
+
+.partido-lista{
+  font-size:24px;
+  font-weight:900;
+  margin-top:42px;
+}
+
+.sigla-lista{
+  font-size:22px;
+  margin-top:42px;
+}
+
+.encabezado-junta{
+  background:#fff;
+  border:2px solid #ddd;
+  padding:8px 0;
+}
+
+.encabezado-junta .lista{
+  font-size:24px;
+  font-weight:700;
+}
+
+.encabezado-junta .partido{
+  margin:4px 0 0;
+  font-size:30px;
+}
+
+.card-junta{
+  min-height:125px;
+  display:grid;
+  grid-template-columns:90px 1fr;
+  padding:6px;
+}
+
+.foto-junta{
+  width:80px;
+  height:80px;
+  object-fit:contain;
+}
+
+.opcion{
+  font-size:26px;
+  font-weight:900;
+  line-height:1;
+}
+
+.nombre-junta{
+  grid-column:1/3;
+  font-size:15px;
+  margin-top:4px;
+}
+
+.barra-inferior{
+  height:45px;
+  background:#c7c7c7;
+  display:flex;
+  align-items:center;
+  gap:25px;
+  padding-left:10px;
+  font-size:12px;
+}
+
+.btn-mini{
+  background:#555;
+  color:#fff;
+  border:none;
+  padding:8px 14px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.resultado{
+  display:grid;
+  grid-template-columns:1fr 1fr 160px;
+  background:#fff;
+}
+
+.bloque-final{
+  min-height:360px;
+  border:2px solid #ddd;
+  padding:18px;
+}
+
+.titulo-final{
+  font-size:26px;
+  font-weight:900;
+  border-bottom:1px solid #999;
+  padding-bottom:8px;
+}
+
+.final-partido{
+  font-size:28px;
+  font-weight:900;
+  margin-top:24px;
+}
+
+.final-lista{
+  font-size:26px;
+  font-weight:900;
+  margin-top:28px;
+}
+
+.final-img{
+  width:150px;
+  height:150px;
+  object-fit:contain;
+  margin-top:20px;
+}
+
+.final-nombre{
+  font-size:26px;
+  font-weight:900;
+  margin-top:18px;
+}
+
+.btn-modificar{
+  margin-top:18px;
+  background:#666;
+  color:white;
+  border:none;
+  border-radius:5px;
+  padding:12px 30px;
+  font-size:20px;
+  font-weight:bold;
+}
+
+.acciones{
+  display:grid;
+  grid-template-rows:1fr 2fr;
+}
+
+.btn-reiniciar{
+  background:#ff7a00;
+  color:#fff;
+  border:none;
+  font-size:20px;
+  font-weight:900;
+}
+
+.btn-imprimir{
+  background:#00a000;
+  color:#fff;
+  border:none;
+  font-size:20px;
+  font-weight:900;
+}
+
+@media print{
+  body *{visibility:hidden}
+  #p7,#p7 *{visibility:visible}
+  #p7{
+    position:absolute;
+    top:0;
+    left:0;
+    padding-top:0;
+    background:white;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- P1 INTENDENTE -->
+<div id="p2" class="pantalla activa">
+  <div class="marco">
+    <div class="barra-superior">
+      <img src="logo.png" class="logo">
+      <div class="titulo-barra">Candidatos a INTENDENTE MUNICIPAL</div>
+      <div></div>
+    </div>
+
+    <div class="grid2">
+      <div class="card" onclick="elegirIntendente(this,'HONOR COLORADO','LISTA 2','amalia.png','Amalia Vargas')">
+        <div class="partido">HONOR COLORADO</div>
+        <div class="fila-candidato">
+          <img src="amalia.png" class="foto-int">
+          <div>
+            <div class="lista-box">LISTA</div>
+            <div class="lista-numero">2</div>
+            <div class="sigla">MHC</div>
+          </div>
+        </div>
+        <div class="nombre">Amalia Vargas</div>
+      </div>
+
+      <div class="card" onclick="elegirIntendente(this,'CAUSA REPUBLICANA','LISTA 5','cristian.png','Dr. Cristhian Figueroa')">
+        <div class="partido">CAUSA REPUBLICANA</div>
+        <div class="fila-candidato">
+          <img src="cristian.png" class="foto-int">
+          <div>
+            <div class="lista-box">LISTA</div>
+            <div class="lista-numero">5</div>
+            <div class="sigla">MCR</div>
+          </div>
+        </div>
+        <div class="nombre">Dr. Cristhian Figueroa</div>
+      </div>
+
+      <div class="card" onclick="elegirIntendente(this,'VOTO EN BLANCO','','blanco.png','Voto en Blanco')">
+        <div class="blanco">VOTO EN BLANCO</div>
+      </div>
+
+      <div class="card bloqueado"></div>
+    </div>
+
+    <div class="barra-inferior">Vista alto contraste</div>
+  </div>
+</div>
+
+<!-- P2 LISTAS -->
+<div id="p3" class="pantalla">
+  <div class="marco">
+    <div class="barra-superior">
+      <img src="logo.png" class="logo">
+      <div class="titulo-barra">Listas participantes al cargo de JUNTA MUNICIPAL</div>
+      <img src="logo.png" class="logo-derecha">
+    </div>
+
+    <div class="grid2">
+      <div class="card card-lista" onclick="elegirLista(this,'HONOR COLORADO','LISTA 2')">
+        <div class="lista-grande">LISTA 2</div>
+        <div class="partido-lista">HONOR COLORADO</div>
+        <div class="sigla-lista">MHC</div>
+      </div>
+
+      <div class="card card-lista" onclick="elegirLista(this,'CAUSA REPUBLICANA','LISTA 5')">
+        <div class="lista-grande">LISTA 5</div>
+        <div class="partido-lista">CAUSA REPUBLICANA</div>
+        <div class="sigla-lista">MCR</div>
+      </div>
+
+      <div class="card card-lista" onclick="elegirLista(this,'VOTO EN BLANCO','')">
+        <div class="blanco">VOTO EN BLANCO</div>
+      </div>
+
+      <div class="card bloqueado"></div>
+    </div>
+
+    <div class="barra-inferior">
+      Vista alto contraste
+      <button class="btn-mini" onclick="volverA('p2')">Volver Atrás</button>
+    </div>
+  </div>
+</div>
+
+<!-- P3 JUNTA -->
+<div id="p6" class="pantalla">
+  <div class="marco">
+    <div class="barra-superior">
+      <img src="logo.png" class="logo">
+      <div class="titulo-barra">Candidatos a JUNTA MUNICIPAL</div>
+      <img src="logo.png" class="logo-derecha">
+    </div>
+
+    <div class="encabezado-junta">
+      <div class="lista" id="tituloListaJunta">Lista 2</div>
+      <div class="partido" id="tituloPartidoJunta">HONOR COLORADO</div>
+    </div>
+
+    <div class="grid-junta">
+      <div class="card card-junta" onclick="elegirJunta(this,'junta1.png','Elmer Vogt','Opción 1')"><img src="junta1.png" class="foto-junta"><div class="opcion">Opción<br>1</div><div class="nombre-junta">Elmer Vogt</div></div>
+      <div class="card card-junta" onclick="elegirJunta(this,'junta2.png','Jose Marin','Opción 2')"><img src="junta2.png" class="foto-junta"><div class="opcion">Opción<br>2</div><div class="nombre-junta">Jose Marin</div></div>
+      <div class="card card-junta" onclick="elegirJunta(this,'junta3.png','Armin Barg','Opción 3')"><img src="junta3.png" class="foto-junta"><div class="opcion">Opción<br>3</div><div class="nombre-junta">Armin Barg</div></div>
+      <div class="card card-junta" onclick="elegirJunta(this,'junta4.png','Angel Gabriel Barros Arce','Opción 4')"><img src="junta4.png" class="foto-junta"><div class="opcion">Opción<br>4</div><div class="nombre-junta">Angel Gabriel Barros Arce</div></div>
+
+      <div class="card card-junta" onclick="elegirJunta(this,'junta5.png','Gundela Wolk','Opción 5')"><img src="junta5.png" class="foto-junta"><div class="opcion">Opción<br>5</div><div class="nombre-junta">Gundela Wolk</div></div>
+      <div class="card card-junta" onclick="elegirJunta(this,'junta6.png','Hector Marciano Perez Loewen','Opción 6')"><img src="junta6.png" class="foto-junta"><div class="opcion">Opción<br>6</div><div class="nombre-junta">Hector Marciano Perez Loewen</div></div>
+      <div class="card card-junta" onclick="elegirJunta(this,'junta7.png','Ernesto Almirante','Opción 7')"><img src="junta7.png" class="foto-junta"><div class="opcion">Opción<br>7</div><div class="nombre-junta">Ernesto Almirante</div></div>
+      <div class="card card-junta" onclick="elegirJunta(this,'junta8.png','Alberto Guzman Quintana Lovera','Opción 8')"><img src="junta8.png" class="foto-junta"><div class="opcion">Opción<br>8</div><div class="nombre-junta">Alberto Guzman Quintana Lovera</div></div>
+
+      <div class="card card-junta" onclick="elegirJunta(this,'junta9.png','Vidal Avalos Ayala','Opción 9')"><img src="junta9.png" class="foto-junta"><div class="opcion">Opción<br>9</div><div class="nombre-junta">Vidal Avalos Ayala</div></div>
+      <div class="card card-junta" onclick="elegirJunta(this,'junta10.png','Andrea Velazquez','Opción 10')"><img src="junta10.png" class="foto-junta"><div class="opcion">Opción<br>10</div><div class="nombre-junta">Andrea Velazquez</div></div>
+      <div class="card card-junta" onclick="elegirJunta(this,'junta11.png','Andres Rios','Opción 11')"><img src="junta11.png" class="foto-junta"><div class="opcion">Opción<br>11</div><div class="nombre-junta">Andres Rios</div></div>
+      <div class="card card-junta" onclick="elegirJunta(this,'junta12.png','Maik Ens','Opción 12')"><img src="junta12.png" class="foto-junta"><div class="opcion">Opción<br>12</div><div class="nombre-junta">Maik Ens</div></div>
+    </div>
+
+    <div class="barra-inferior">
+      Vista alto contraste
+      <button class="btn-mini" onclick="volverA('p3')">Volver Atrás</button>
+    </div>
+  </div>
+</div>
+
+<!-- P4 RESULTADO -->
+<div id="p7" class="pantalla">
+  <div class="marco">
+    <div class="barra-superior">
+      <img src="logo.png" class="logo">
+      <div class="titulo-barra">Opciones seleccionadas</div>
+      <div></div>
+    </div>
+
+    <div class="resultado">
+      <div class="bloque-final">
+        <div class="titulo-final">INTENDENTE MUNICIPAL</div>
+        <div class="final-partido" id="finalIntPartido">HONOR COLORADO</div>
+        <div class="final-lista" id="finalIntLista">LISTA 2</div>
+        <img id="finalIntImg" src="amalia.png" class="final-img">
+        <div class="final-nombre" id="finalIntNombre">Amalia Vargas</div>
+        <button class="btn-modificar" onclick="volverA('p2')">Modificar</button>
+      </div>
+
+      <div class="bloque-final">
+        <div class="titulo-final">JUNTA MUNICIPAL</div>
+        <div class="final-partido" id="finalJunPartido">HONOR COLORADO</div>
+        <div class="final-lista" id="finalJunLista">LISTA 2</div>
+        <img id="finalJunImg" src="junta1.png" class="final-img">
+        <div class="final-nombre" id="finalJunNombre">Elmer Vogt</div>
+        <div id="finalJunOpcion">Opción 1</div>
+        <button class="btn-modificar" onclick="volverA('p6')">Modificar</button>
+      </div>
+
+      <div class="acciones">
+        <button class="btn-reiniciar" onclick="reiniciar()">↻<br>Reiniciar<br>Selección</button>
+        <button class="btn-imprimir" onclick="window.print()">🖨<br>Imprimir<br>Selección</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let intPartido = "HONOR COLORADO";
+let intLista = "LISTA 2";
+let intImg = "amalia.png";
+let intNombre = "Amalia Vargas";
+
+let junPartido = "HONOR COLORADO";
+let junLista = "LISTA 2";
+
+function mostrarPantalla(id){
+  let pantallas=document.getElementsByClassName("pantalla");
+  for(let i=0;i<pantallas.length;i++){
+    pantallas[i].className="pantalla";
+  }
+  document.getElementById(id).className="pantalla activa";
+  window.scrollTo(0,0);
+}
+
+function limpiarSeleccion(id){
+  let cont=document.getElementById(id);
+  let cards=cont.getElementsByClassName("card");
+  for(let i=0;i<cards.length;i++){
+    cards[i].className=cards[i].className.replace(" seleccionado","");
+  }
+}
+
+function elegirIntendente(el, partido, lista, img, nombre){
+  limpiarSeleccion("p2");
+  el.className += " seleccionado";
+
+  intPartido = partido;
+  intLista = lista;
+  intImg = img;
+  intNombre = nombre;
+
+  document.getElementById("finalIntPartido").innerHTML = partido;
+  document.getElementById("finalIntLista").innerHTML = lista;
+  document.getElementById("finalIntImg").src = img;
+  document.getElementById("finalIntNombre").innerHTML = nombre;
+
+  setTimeout(function(){mostrarPantalla("p3")},120);
+}
+
+function elegirLista(el, partido, lista){
+  limpiarSeleccion("p3");
+  el.className += " seleccionado";
+
+  junPartido = partido;
+  junLista = lista;
+
+  document.getElementById("tituloListaJunta").innerHTML = lista;
+  document.getElementById("tituloPartidoJunta").innerHTML = partido;
+  document.getElementById("finalJunPartido").innerHTML = partido;
+  document.getElementById("finalJunLista").innerHTML = lista;
+
+  setTimeout(function(){mostrarPantalla("p6")},120);
+}
+
+function elegirJunta(el,img,nombre,opcion){
+  limpiarSeleccion("p6");
+  el.className += " seleccionado";
+
+  document.getElementById("finalJunImg").src = img;
+  document.getElementById("finalJunNombre").innerHTML = nombre;
+  document.getElementById("finalJunOpcion").innerHTML = opcion;
+
+  setTimeout(function(){mostrarPantalla("p7")},120);
+}
+
+function volverA(id){
+  mostrarPantalla(id);
+}
+
+function reiniciar(){
+  mostrarPantalla("p2");
+}
+
+window.onload=function(){
+  mostrarPantalla("p2");
+}
+</script>
+
+</body>
+</html>
